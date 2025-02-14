@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "Email" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "from" TEXT NOT NULL,
+    "subject" TEXT NOT NULL,
+    "preview" TEXT NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "read" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

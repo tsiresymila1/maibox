@@ -1,0 +1,32 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Email {
+  id          String       @id @default(cuid())
+  to          String
+  from        String
+  subject     String
+  text        String       @default("")
+  html        String       @default("")
+  raw         String       @default("")
+  headers     String       @default("")
+  date        DateTime     @default(now())
+  read        Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  attachments Attachment[]
+}
+
+model Attachment {
+  id       String @id @default(cuid())
+  fileName String
+  fileType String
+  fileUrl  String
+  emailId  String
+  email    Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+}
