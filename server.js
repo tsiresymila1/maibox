@@ -10,7 +10,7 @@ import { Server } from "socket.io";
 import { parse } from "url";
 import { eventEmitter } from "./lib/event.js";
 
-const port = parseInt(process.env.PORT || "3000", 10);
+const port = parseInt(process.env.PORT || "1080", 10);
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const app = next({ dev });

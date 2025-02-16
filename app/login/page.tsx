@@ -29,7 +29,7 @@ export default function LoginPage() {
         formData.append("email", data.email);
         formData.append("password", data.password);
         const res = await loginAction(formData);
-        console.log("Res:::",res)
+        console.log("Res:::", res)
         if (res?.success) {
             router.push("/");
         } else {
@@ -81,9 +81,11 @@ export default function LoginPage() {
                                 {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
                             </div>
                         </div>
-                        <Button type="submit" className="w-full">
-                            Login
-                        </Button>
+                        <div className="pt-4">
+                            <Button type="submit" className="w-full">
+                                Login
+                            </Button>
+                        </div>
                     </form>
                 </CardContent>
             </Card>

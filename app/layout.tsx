@@ -1,11 +1,10 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from 'next';
-import { Inter, Roboto } from 'next/font/google';
+import { Poppins } from 'next/font/google';
 import React from "react";
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
-const roboto = Roboto({
+const roboto = Poppins({
     weight: ['400', '500', '700', '900'],
     subsets: ['latin']
 });

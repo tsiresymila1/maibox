@@ -28,3 +28,11 @@ export async function loginAction(formData: FormData) {
   revalidatePath("/");
   return { success: true };
 }
+
+export async function logOut() {
+  cookies().delete("email");
+  cookies().delete("password");
+  cookies().delete("sessionToken");
+  revalidatePath("/");
+  return { success: true };
+}

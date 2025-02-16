@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSocket } from "@/hooks/use-socket";
-import { Bell, Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
+import { Bell, LogOut, Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
 import Head from "next/head";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import { logOut } from "./actions/auth";
 import { deleteAll, getEmails, markAllAsRead, markEmailAsRead } from "./actions/email";
 
 export default function Home() {
@@ -20,6 +22,8 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
     const [unread, setUnread] = useState<number>(0)
+
+    const router = useRouter()
 
     const fetchEmails = async () => {
         setLoading(true);
@@ -74,6 +78,11 @@ export default function Home() {
         )
     }
 
+    const loginOut = async () => {
+        await logOut()
+        router.replace("/login");
+    }
+
     const { isConnected } = useSocket(fetchEmails);
 
     useEffect(() => {
@@ -102,7 +111,7 @@ export default function Home() {
             <div className="flex h-screen bg-background">
                 {/* Email List */}
                 <div className="w-[300px] flex flex-col border-r">
-                    <div className="px-4 py-3 border-b bg-cyan-700">
+                    <div className="px-4 py-3 border-b bg-blue-800">
                         <div className="relative flex flex-row items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="relative">
@@ -163,8 +172,8 @@ export default function Home() {
 
                 {/* Email Preview */}
                 <div className="flex-1 flex flex-col">
-                    <div className="w-full bg-cyan-700 py-3 px-4 flex flex-row justify-between">
-                        <div className="flex-1">
+                    <div className="w-full bg-blue-800 py-3 px-4 flex flex-row justify-between">
+                        <div className="flex-1 gap-2 flex">
                             <Button
                                 variant="ghost"
                                 size="sm"
@@ -194,7 +203,18 @@ export default function Home() {
                                 <RefreshCcw className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
                             </Button>
                         </div>
-                        <ThemeToggle />
+                        <div className="flex flex-row gap-2">
+                            <ThemeToggle />
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="focus:bg-transparent hover:bg-transparent px-1"
+                                onClick={loginOut}
+                                disabled={isPending}
+                            >
+                                <LogOut className={`h-5 w-5 text-white`} />
+                            </Button>
+                        </div>
                     </div>
                     <EmailContent email={selectedEmail} />
                 </div>
