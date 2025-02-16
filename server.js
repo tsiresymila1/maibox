@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { writeFile } from "fs/promises";
 import { createServer } from "http";
 import { simpleParser } from "mailparser";
-import path from "path";
+import { writeFileSync } from "node:fs";
+import path from "node:path";
 
 import next from "next";
 import { SMTPServer } from "smtp-server";
@@ -56,7 +56,7 @@ app.prepare().then(() => {
               from: parsedEmail.from?.text || "",
               to: parsedEmail.to?.text || "",
               date: parsedEmail.date || new Date().toISOString(),
-              subject: parsedEmail.subject || "No Subject",
+              subject: parsedEmail.subject || "(No Subject)",
               text: parsedEmail.text || "",
               html: parsedEmail.html || "",
               headers: parsedEmail.headers,
@@ -76,19 +76,15 @@ app.prepare().then(() => {
 
             await Promise.all(
               emailData.attachments.map(async (file) => {
-                const bytes = await file.arrayBuffer();
-                const buffer = Buffer.from(bytes);
-                const filePath = path.join(
-                  process.cwd(),
-                  "public/uploads",
-                  file.name
-                );
-                await writeFile(filePath, buffer);
+                const buffer = Buffer.from(file.content);
+                const filename = `/attachments/file${file.checksum}_${file.filename}`;
+                const filePath = path.join(process.cwd(), "public", filename);
+                writeFileSync(filePath, buffer);
                 return await prisma.attachment.create({
                   data: {
-                    fileName: file.name,
-                    fileType: file.type,
-                    fileUrl: `/uploads/${file.name}`,
+                    fileName: file.filename,
+                    fileType: file.contentType,
+                    fileUrl: filename,
                     emailId: email.id,
                   },
                 });

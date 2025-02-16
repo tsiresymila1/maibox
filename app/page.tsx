@@ -1,31 +1,34 @@
 "use client";
 
-import EmailContent from "@/components/email-content";
+import EmailContent, { EmailWithAttachments } from "@/components/email-content";
 import { ThemeToggle } from "@/components/toggle-theme";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSocket } from "@/hooks/use-socket";
-import { Email } from "@prisma/client";
-import { Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
+import { Bell, Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
 import Head from "next/head";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { deleteAll, getEmails, markAllAsRead, markEmailAsRead } from "./actions/email";
 
 export default function Home() {
-    const [emails, setEmails] = useState<Email[]>([]);
-    const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+    const [emails, setEmails] = useState<EmailWithAttachments[]>([]);
+    const [selectedEmail, setSelectedEmail] = useState<EmailWithAttachments | null>(null);
     const [search, setSearch] = useState<string>("")
+    const [searchEmails, setSearchEmails] = useState<EmailWithAttachments[]>([])
     const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
     const [unread, setUnread] = useState<number>(0)
 
     const fetchEmails = async () => {
         setLoading(true);
+        setSelectedEmail(null)
         startTransition(async () => {
             try {
                 const data = await getEmails();
-                setEmails(filterEmail(data));
+                setEmails(data)
+                setSearchEmails(filterEmail(search, data));
                 setUnread(data.filter(e => !e.read).length)
                 if (data.length > 0) {
                     setSelectedEmail(data[0])
@@ -38,13 +41,14 @@ export default function Home() {
         });
     };
 
-    const handleEmailClick = async (email: Email) => {
+    const handleEmailClick = async (email: EmailWithAttachments) => {
         if (!email.read) {
             await markEmailAsRead(email.id);
             setUnread(e => e - 1)
-            setEmails(prevEmails =>
-                filterEmail(prevEmails).map(e => (e.id === email.id ? { ...e, read: true } : e))
+            setSearchEmails(
+                filterEmail(search, emails).map(e => (e.id === email.id ? { ...e, read: true } : e))
             );
+            setEmails(emails.map(e => (e.id === email.id ? { ...e, read: true } : e)))
         }
         setSelectedEmail(email);
     };
@@ -52,25 +56,23 @@ export default function Home() {
 
     const readAll = async () => {
         await markAllAsRead()
-        setSelectedEmail(null)
         await fetchEmails()
     }
 
     const makeEmpty = async () => {
         await deleteAll()
-        setSelectedEmail(null)
         await fetchEmails()
     }
 
-    const filterEmail = useCallback((emails: Email[]) => {
-        const lowerSearch = search.toLowerCase()
-        return emails.filter(e =>
+    const filterEmail = (key: string, all: EmailWithAttachments[]) => {
+        const lowerSearch = key.toLowerCase()
+        return all.filter(e =>
             e.subject.toLowerCase().includes(lowerSearch)
             || e.text.toLowerCase().includes(lowerSearch)
             || e.from.toLowerCase().includes(lowerSearch)
             || e.to.toLowerCase().includes(lowerSearch)
         )
-    }, [search])
+    }
 
     const { isConnected } = useSocket(fetchEmails);
 
@@ -83,17 +85,15 @@ export default function Home() {
     }, [unread])
 
     useEffect(() => {
-        setEmails(prevEmails => {
-            const emails = filterEmail(prevEmails)
-            if (emails.length === 0) {
-                setSelectedEmail(null)
-            } else {
-                setSelectedEmail(emails[0])
-            }
-            return emails;
+        const allEMail = filterEmail(search, emails)
+        if (allEMail.length === 0) {
+            setSelectedEmail(null)
+        } else {
+            setSelectedEmail(emails[0])
         }
-        );
+        setSearchEmails(allEMail);
     }, [search])
+
     return (
         <>
             <Head>
@@ -116,30 +116,12 @@ export default function Home() {
                                     variant="ghost"
                                     size="sm"
                                     className="focus:bg-transparent hover:bg-transparent px-1"
-                                    onClick={readAll}
-                                    disabled={isPending}
-                                >
-                                    <MailCheck className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="focus:bg-transparent hover:bg-transparent px-1"
-                                    onClick={fetchEmails}
-                                    disabled={isPending}
-                                >
-                                    <RefreshCcw className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="focus:bg-transparent hover:bg-transparent px-1"
                                     onClick={makeEmpty}
                                     disabled={isPending}
                                 >
-                                    <Trash2 className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
+                                    <Bell className={`h-5 w-5 text-white`} />
+                                    {unread > 0 ? <Badge children={unread} variant="destructive" className="  top-0 absolute right-0 text-sm h-4 p-[2px] text-[10px]" color="red" /> : null}
                                 </Button>
-                                <ThemeToggle />
                             </div>
                         </div>
                     </div>
@@ -151,11 +133,12 @@ export default function Home() {
                     </div>
                     <ScrollArea className="flex-1">
                         {loading ? (
-                            <div className="p-4 text-center text-muted-foreground">Loading...</div>
-                        ) : emails.length === 0 ? (
+                            <div className="p-4 text-center£ text-muted-foreground">Loading...</div>
+
+                        ) : searchEmails.length === 0 ? (
                             <div className="p-4 text-center text-muted-foreground">No emails found</div>
                         ) : (
-                            emails.map(email => (
+                            searchEmails.map(email => (
                                 <div
                                     key={email.id}
                                     className={`p-4 border-b cursor-pointer hover:bg-muted transition-colors text-sm ${selectedEmail?.id === email.id ? "bg-muted" : ""
@@ -179,7 +162,42 @@ export default function Home() {
                 </div>
 
                 {/* Email Preview */}
-                <EmailContent email={selectedEmail} />
+                <div className="flex-1 flex flex-col">
+                    <div className="w-full bg-cyan-700 py-3 px-4 flex flex-row justify-between">
+                        <div className="flex-1">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="focus:bg-transparent hover:bg-transparent px-1"
+                                onClick={readAll}
+                                disabled={isPending}
+                            >
+                                <MailCheck className={`h-5 w-5 text-white`} />
+                            </Button>
+
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="focus:bg-transparent hover:bg-transparent px-1"
+                                onClick={makeEmpty}
+                                disabled={isPending}
+                            >
+                                <Trash2 className={`h-5 w-5 text-white`} />
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="focus:bg-transparent hover:bg-transparent px-1"
+                                onClick={fetchEmails}
+                                disabled={isPending}
+                            >
+                                <RefreshCcw className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
+                            </Button>
+                        </div>
+                        <ThemeToggle />
+                    </div>
+                    <EmailContent email={selectedEmail} />
+                </div>
             </div>
         </>
     );
