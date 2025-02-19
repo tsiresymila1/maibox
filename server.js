@@ -11,6 +11,7 @@ import { parse } from "url";
 import { eventEmitter } from "./lib/event.js";
 
 const port = parseInt(process.env.PORT || "1080", 10);
+const emailPort = parseInt(process.env.EMAIL_PORT || "1025", 10);
 const dev = process.env.NODE_ENV !== "production";
 const hostname = "localhost";
 const app = next({ dev });
@@ -98,8 +99,8 @@ app.prepare().then(() => {
     },
   });
 
-  smtpServer.listen(1025, () => {
-    console.log("> SMTP Server running on port 1025");
+  smtpServer.listen(emailPort, () => {
+    console.log(`> SMTP Server running on port ${emailPort}`);
   });
 
   httpServer
