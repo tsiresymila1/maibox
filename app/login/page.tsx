@@ -19,7 +19,12 @@ export default function LoginPage() {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<FormData>();
+    } = useForm<FormData>({
+        defaultValues: {
+            email: "admin@mail.com",
+            password: "password"
+        }
+    });
     const router = useRouter();
     const [error, setError] = useState<string | null>(null);
 
