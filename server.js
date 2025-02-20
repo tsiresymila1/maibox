@@ -78,8 +78,13 @@ app.prepare().then(() => {
             await Promise.all(
               emailData.attachments.map(async (file) => {
                 const buffer = Buffer.from(file.content);
-                const filename = `/attachments/file${file.checksum}_${file.filename}`;
-                const filePath = path.join(process.cwd(), "public", filename);
+                const filename = `file${file.checksum}_${file.filename}`;
+                const filePath = path.join(
+                  process.cwd(),
+                  "public",
+                  "attachments",
+                  filename
+                );
                 writeFileSync(filePath, buffer);
                 return await prisma.attachment.create({
                   data: {

@@ -48,7 +48,7 @@ export default function EmailContent({ email }: { email?: EmailWithAttachments |
                                         key={e.id}
                                         target="_blank"
                                         className="underline px-4 py-2 rounded-sm bg-muted"
-                                        href={e.fileUrl}
+                                        href={`/uploads/${e.fileUrl}`}
                                     >{e.fileName}</a>
                                 })}
                             </ScrollArea>

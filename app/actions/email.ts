@@ -46,7 +46,9 @@ export async function deleteAll() {
   const attachments = await prisma.attachment.findMany();
   for (const att of attachments) {
     try {
-      unlinkSync(path.join(process.cwd(), "public", `${att.fileUrl}`));
+      unlinkSync(
+        path.join(process.cwd(), "public", "attachments", `${att.fileUrl}`)
+      );
     } catch (_) {}
   }
   await prisma.email.deleteMany();
