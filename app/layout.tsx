@@ -1,6 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from 'next';
-import { Poppins } from 'next/font/google';
+import { Poppins, ABeeZee , Roboto, } from 'next/font/google';
 import React from "react";
 import './globals.css';
 

@@ -22,7 +22,7 @@ export function ThemeToggle() {
             className="focus:bg-transparent hover:bg-transparent px-1"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-            {theme === "dark" ? <Sun className="h-5 w-5 text-white"/> : <Moon className="h-5 w-5 text-white"/>}
+            {theme === "dark" ? <Sun className="h-4 w-4 text-white"/> : <Moon className="h-4 w-4 text-white"/>}
         </Button>
     );
 }

@@ -1679,6 +1679,11 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
+favicon-badge-notify@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/favicon-badge-notify/-/favicon-badge-notify-1.1.5.tgz#b0f7d04cd2999e9882602f5a4546f7cec455d87f"
+  integrity sha512-/4fy+B7UFAYxgUQTGY9Bh55LmQllYaTpuu85AxFx84yo34wwMa/iNoOcyymD/3tlSDhu4cf6y7z1OLaksVXxSQ==
+
 file-entry-cache@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-6.0.1.tgz#211b2dd9659cb0394b073e7323ac3c933d522027"
@@ -2506,6 +2511,13 @@ react-dom@18.3.1:
   dependencies:
     loose-envify "^1.1.0"
     scheduler "^0.23.2"
+
+react-favicon@^2.0.7:
+  version "2.0.7"
+  resolved "https://registry.yarnpkg.com/react-favicon/-/react-favicon-2.0.7.tgz#168a4ae58cd9eb73e2cdeb294abb21dd62d0845d"
+  integrity sha512-Vqjk8VHnOu7vl7JnP13nPJ05DyFGObF655xFkbTUIbF4vqLx1Slbc56Hrbzg1leROAKHzElm3u4KUzaXO46A6A==
+  dependencies:
+    prop-types "^15.8.1"
 
 react-hook-form@^7.53.0:
   version "7.54.2"

@@ -7,12 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSocket } from "@/hooks/use-socket";
+import Favicon from "react-favicon";
+
 import { Bell, LogOut, Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
+
 import Head from "next/head";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { logOut } from "./actions/auth";
 import { deleteAll, getEmails, markAllAsRead, markEmailAsRead } from "./actions/email";
+import faviconIco from "./favicon.ico";
+
 
 export default function Home() {
     const [emails, setEmails] = useState<EmailWithAttachments[]>([]);
@@ -22,6 +27,7 @@ export default function Home() {
     const [loading, setLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
     const [unread, setUnread] = useState<number>(0)
+
 
     const router = useRouter()
 
@@ -108,6 +114,7 @@ export default function Home() {
             <Head>
                 <title>MAILBOX{unread > 0 && `(${unread})`}</title>
             </Head>
+            <Favicon  url='./favicon.ico' alertCount={unread ?? null}/>
             <div className="flex h-screen bg-background">
                 {/* Email List */}
                 <div className="w-[300px] flex flex-col border-r">
@@ -125,10 +132,9 @@ export default function Home() {
                                     variant="ghost"
                                     size="sm"
                                     className="focus:bg-transparent hover:bg-transparent px-1"
-                                    onClick={makeEmpty}
                                     disabled={isPending}
                                 >
-                                    <Bell className={`h-5 w-5 text-white`} />
+                                    <Bell size={0} className={`h-5 w-5 text-white`} />
                                     {unread > 0 ? <Badge children={unread} variant="destructive" className="  top-0 absolute right-0 text-sm h-4 p-[2px] text-[10px]" color="red" /> : null}
                                 </Button>
                             </div>
@@ -150,18 +156,18 @@ export default function Home() {
                             searchEmails.map(email => (
                                 <div
                                     key={email.id}
-                                    className={`p-4 border-b cursor-pointer hover:bg-muted transition-colors text-sm ${selectedEmail?.id === email.id ? "bg-muted" : ""
+                                    className={`p-4 border-b cursor-pointer hover:bg-muted transition-colors ${selectedEmail?.id === email.id ? "bg-muted" : ""
                                         } ${!email.read ? "font-[900] dark:bg-gray-800 bg-gray-100" : "font-normal"}`}
                                     onClick={() => handleEmailClick(email)}
                                 >
                                     <div className="flex justify-between items-start mb-1">
-                                        <span className="text-sm">{email.from}</span>
+                                        <span className="text-xs">{email.from}</span>
                                         <span className="text-xs text-muted-foreground">
                                             {email.date.toLocaleString()}
                                         </span>
                                     </div>
-                                    <div className="text-sm font-medium mb-1">{email.subject}</div>
-                                    <div className="text-sm text-muted-foreground truncate">
+                                    <div className="text-xs font-medium mb-1">{email.subject}</div>
+                                    <div className="text-xs text-muted-foreground truncate">
                                         {email.text}
                                     </div>
                                 </div>
@@ -181,7 +187,7 @@ export default function Home() {
                                 onClick={readAll}
                                 disabled={isPending}
                             >
-                                <MailCheck className={`h-5 w-5 text-white`} />
+                                <MailCheck className={`h-4 w-4 text-white`} />
                             </Button>
 
                             <Button
@@ -191,7 +197,7 @@ export default function Home() {
                                 onClick={makeEmpty}
                                 disabled={isPending}
                             >
-                                <Trash2 className={`h-5 w-5 text-white`} />
+                                <Trash2 className={`h-4 w-4 text-white`} />
                             </Button>
                             <Button
                                 variant="ghost"
@@ -200,7 +206,7 @@ export default function Home() {
                                 onClick={fetchEmails}
                                 disabled={isPending}
                             >
-                                <RefreshCcw className={`h-5 w-5 text-white ${isPending ? "animate-spin" : ""}`} />
+                                <RefreshCcw className={`h-4 w-4 text-white ${isPending ? "animate-spin" : ""}`} />
                             </Button>
                         </div>
                         <div className="flex flex-row gap-2">
@@ -212,7 +218,7 @@ export default function Home() {
                                 onClick={loginOut}
                                 disabled={isPending}
                             >
-                                <LogOut className={`h-5 w-5 text-white`} />
+                                <LogOut className={`h-4 w-4 text-white`} />
                             </Button>
                         </div>
                     </div>
