@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSocket } from "@/hooks/use-socket";
+import DOMPurify from "dompurify";
 import Favicon from "react-favicon";
 
 import { Bell, LogOut, Mail, MailCheck, RefreshCcw, Search, Trash2 } from "lucide-react";
@@ -16,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { logOut } from "./actions/auth";
 import { deleteAll, getEmails, markAllAsRead, markEmailAsRead } from "./actions/email";
-import faviconIco from "./favicon.ico";
 
 
 export default function Home() {
@@ -73,6 +73,13 @@ export default function Home() {
         await deleteAll()
         await fetchEmails()
     }
+    const truncateText = (text: string, length: number = 20) => {
+        return text.length > length ? text.slice(0, length) + "..." : text;
+    };
+
+    const htmlToString = (html: string) => {
+        return DOMPurify.sanitize(html, { ALLOWED_TAGS: [] });
+    };
 
     const filterEmail = (key: string, all: EmailWithAttachments[]) => {
         const lowerSearch = key.toLowerCase()
@@ -114,7 +121,7 @@ export default function Home() {
             <Head>
                 <title>MAILBOX{unread > 0 && `(${unread})`}</title>
             </Head>
-            <Favicon  url='./favicon.ico' alertCount={unread ?? null}/>
+            <Favicon url='./favicon.ico' alertCount={unread ?? null} />
             <div className="flex h-screen bg-background">
                 {/* Email List */}
                 <div className="w-[300px] flex flex-col border-r">
@@ -148,7 +155,7 @@ export default function Home() {
                     </div>
                     <ScrollArea className="flex-1">
                         {loading ? (
-                            <div className="p-4 text-center£ text-muted-foreground">Loading...</div>
+                            <div className="p-4 text-center text-muted-foreground">Loading...</div>
 
                         ) : searchEmails.length === 0 ? (
                             <div className="p-4 text-center text-muted-foreground">No emails found</div>
@@ -166,9 +173,9 @@ export default function Home() {
                                             {email.date.toLocaleString()}
                                         </span>
                                     </div>
-                                    <div className="text-xs font-medium mb-1">{email.subject}</div>
+                                    <div className="text-xs font-medium mb-1">{truncateText(email.subject, 30)}</div>
                                     <div className="text-xs text-muted-foreground truncate">
-                                        {email.text}
+                                        {truncateText(email.text && email.text !== "" ? email.text.toString() : htmlToString(email.html), 30)}
                                     </div>
                                 </div>
                             ))

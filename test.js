@@ -13,7 +13,7 @@ async function sendEmail() {
     from: '"Next.js Mailer" <no-reply@example.com>',
     to: "test@mail.com",
     subject: "Sending email with attachment",
-    text: "This is a test email with an attachment.",
+    text: "This is a test email with an attachment with very logn content that can be overflow the content.",
     html: `
       <!DOCTYPE html>
       <html>
